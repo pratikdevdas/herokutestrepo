@@ -8,7 +8,7 @@ if (process.argv.length < 3) {
 const password = process.argv[2]
 
 const url =
-  `mongodb+srv://fullstack:${password}@cluster0.suius.mongodb.net/note-app?retryWrites=true&w=majority`
+  'mongodb://fullstackopen:heystepbro@cluster0-shard-00-00.suius.mongodb.net:27017,cluster0-shard-00-01.suius.mongodb.net:27017,cluster0-shard-00-02.suius.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-izs497-shard-0&authSource=admin&retryWrites=true&w=majority'
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 .then(result => console.log("success"))
@@ -28,14 +28,8 @@ const note = new Note({
   important: true,
 })
 
-// note.save().then(result => {
-//   console.log('note saved!')
-//   mongoose.connection.close()
-// })
-Note.find({}).then(result => {
-  result.forEach(note => {
-    console.log(note)
-  })
+note.save().then(result => {
+  console.log('note saved!')
   mongoose.connection.close()
 })
-// .catch(error => console.log(error));
+.catch(error => console.log(error));
