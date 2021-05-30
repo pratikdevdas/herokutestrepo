@@ -3,12 +3,12 @@ const express = require('express')
 const app = express()
 const Note = require('./models/note')
 const cors = require('cors')
-const { findByIdAndRemove } = require('./models/note')
+
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
 
-const requestLogger = (request, response, next) => {
+const logger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
   console.log('Body:  ', request.body)
@@ -16,7 +16,7 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-app.use(requestLogger)
+app.use(logger)
 
 // app.get('/', (req, res) => {
 //   res.send('<h1>Hello World!</h1>')
@@ -29,6 +29,17 @@ app.get('/api/notes', (request, response) => {
   Note.find({}).then(notes => {
     response.json(notes)
   })
+})
+
+//fetching single resources
+app.get('/api/notes/:id', (request, response, next) => {
+  Note.findById(request.params.id).then(note => {
+    if(note){
+    response.json(note)
+  } else {
+    response.status(404).end()
+  }
+  }).catch(error =>next(error))
 })
 
 app.post('/api/notes', (request, response, next) => {
@@ -51,16 +62,6 @@ app.post('/api/notes', (request, response, next) => {
     response.json(savedAndFormatted)
   })
   .catch(error=>next(error))
-})
-//fetching single resources
-app.get('/api/notes/:id', (request, response, next) => {
-  Note.findById(request.params.id).then(note => {
-    if(note){
-    response.json(note)
-  } else {
-    response.status(404).end()
-  }
-  }).catch(error =>next(error))
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -107,4 +108,3 @@ const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-//continue tommorow 3.17(put req) and 3.18 for phonebook 
